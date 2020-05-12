@@ -8,13 +8,13 @@ const log = Scratch.log;
 const menuIconURI = null;
 const blockIconURI = null;
 
-class localStorage{
+class testExt{
   constructor (runtime){
     this.runtime = runtime;
     // communication related
     this.comm = runtime.ioDevices.comm;
     this.session = null;
-    this.runtime.registerPeripheralExtension('localStorage', this);
+    this.runtime.registerPeripheralExtension('testExt', this);
     // session callbacks
     this.reporter = null;
     this.onmessage = this.onmessage.bind(this);
@@ -66,53 +66,20 @@ class localStorage{
 
   getInfo (){
     return {
-      id: 'localStorage',
-      name: 'Local Storage',
-      color1: '#2f005a',
-      color2: '#9013fe',
+      id: 'testExt',
+      name: 'Test',
+      color1: '#0FBD8C',
+      color2: '#0DA57A',
       menuIconURI: menuIconURI,
       blockIconURI: blockIconURI,
       blocks: [
-        {
-          opcode: 'LocalVar',
-          blockType: BlockType.REPORTER,
-          arguments: {
-            LocalVar: {
-              type: ArgumentType.STRING
-            }
-          },
-          text: '[LocalVar]'
-        },
-        {
-          opcode: 'Set LocalVar',
-          blockType: BlockType.COMMAND,
-          arguments: {
-            LocalVar: {
-              type: ArgumentType.STRING
-            },
-            Anything: {
-              type: ArgumentType.STRING
-            }
-          },
-          text: 'Set [LocalVar] to [Anything]'
-        }
-      ]
+			['r', '%s', 'readLocalStorage', 'highscore'],
+			[' ', 'set %s to %s', 'setLocalStorage', 'highscore', '12'],
+		]
     }
   }
 
-LocalVar (args, util){
-  const LocalVar = args.LocalVar;
-['r', '%s', 'readLocalStorage', 'highscore']
-  return this.write(`M0 \n`);
-}
-
-Set LocalVar (args, util){
-  const LocalVar = args.LocalVar;
-  const Anything = args.Anything;
-[' ', 'set %s to %s', 'setLocalStorage', 'highscore', '12']
-  return this.write(`M0 \n`);
-}
 
 }
 
-module.exports = localStorage;
+module.exports = testExt;
