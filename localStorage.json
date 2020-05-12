@@ -1,0 +1,73 @@
+{
+  "collapsed": true,
+  "extID": "localStorage",
+  "extName": "Local Storage",
+  "color1Pick": false,
+  "color2Pick": false,
+  "color1": "#2f005a",
+  "color2": "#9013fe",
+  "indexJS": "\n// create by scratch3-extension generator\nconst ArgumentType = Scratch.ArgumentType;\nconst BlockType = Scratch.BlockType;\nconst formatMessage = Scratch.formatMessage;\nconst log = Scratch.log;\n\nconst menuIconURI = null;\nconst blockIconURI = null;\n\nclass localStorage{\n  constructor (runtime){\n    this.runtime = runtime;\n    // communication related\n    this.comm = runtime.ioDevices.comm;\n    this.session = null;\n    this.runtime.registerPeripheralExtension('localStorage', this);\n    // session callbacks\n    this.reporter = null;\n    this.onmessage = this.onmessage.bind(this);\n    this.onclose = this.onclose.bind(this);\n    this.write = this.write.bind(this);\n    // string op\n    this.decoder = new TextDecoder();\n    this.lineBuffer = '';\n  }\n\n  onclose (){\n    this.session = null;\n  }\n\n  write (data, parser = null){\n    if (this.session){\n      return new Promise(resolve => {\n        if (parser){\n          this.reporter = {\n            parser,\n            resolve\n          }\n        }\n        this.session.write(data);\n      })\n    }\n  }\n\n  onmessage (data){\n    const dataStr = this.decoder.decode(data);\n    this.lineBuffer += dataStr;\n    if (this.lineBuffer.indexOf('\\n') !== -1){\n      const lines = this.lineBuffer.split('\\n');\n      this.lineBuffer = lines.pop();\n      for (const l of lines){\n        if (this.reporter){\n          const {parser, resolve} = this.reporter;\n          resolve(parser(l));\n        };\n      }\n    }\n  }\n\n  scan (){\n    this.comm.getDeviceList().then(result => {\n        this.runtime.emit(this.runtime.constructor.PERIPHERAL_LIST_UPDATE, result);\n    });\n  }\n\n  getInfo (){\n    return {\n      id: 'localStorage',\n      name: 'Local Storage',\n      color1: '#2f005a',\n      color2: '#9013fe',\n      menuIconURI: menuIconURI,\n      blockIconURI: blockIconURI,\n      blocks: [\n        {\n          opcode: 'LocalVar',\n          blockType: BlockType.REPORTER,\n          arguments: {\n            LocalVar: {\n              type: ArgumentType.STRING\n            }\n          },\n          text: '[LocalVar]'\n        },\n        {\n          opcode: 'Set LocalVar',\n          blockType: BlockType.COMMAND,\n          arguments: {\n            LocalVar: {\n              type: ArgumentType.STRING\n            },\n            Anything: {\n              type: ArgumentType.STRING\n            }\n          },\n          text: 'Set [LocalVar] to [Anything]'\n        }\n      ]\n    }\n  }\n\nLocalVar (args, util){\n  const LocalVar = args.LocalVar;\n['r', '%s', 'readLocalStorage', 'highscore']\n  return this.write(`M0 \\n`);\n}\n\nSet LocalVar (args, util){\n  const LocalVar = args.LocalVar;\n  const Anything = args.Anything;\n[' ', 'set %s to %s', 'setLocalStorage', 'highscore', '12']\n  return this.write(`M0 \\n`);\n}\n\n}\n\nmodule.exports = localStorage;\n",
+  "menuIcon": null,
+  "blockIcon": null,
+  "editBlockID": "Set LocalVar",
+  "blocks": [
+    {
+      "opcode": "LocalVar",
+      "svg": "<svg id=\"src\" xmlns=\"http://www.w3.org/2000/svg\" width=\"91.96484375\" height=\"40\" >\n    %3Cg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20data-id%3D%22dNl%5E3gQBsMFGlWedeeUu%22%20class%3D%22blocklyDraggable%20blocklySelected%22%20data-shapes%3D%22reporter%20round%22%3E%3Cpath%20class%3D%22blocklyPath%20blocklyBlockBackground%22%20stroke%3D%22%23FF3355%22%20fill%3D%22%23FF6680%22%20fill-opacity%3D%221%22%20d%3D%22m%200%2C0%20m%2020%2C0%20H%2071.96666717529297%20a%2020%2020%200%200%201%200%2040%20H%2020%20a%2020%2020%200%200%201%200%20-40%20z%22%2F%3E%3Cg%20data-id%3D%22%24y.ClHW%7D%3B%24vMNob0H%5D_(%22%20data-argument-type%3D%22text%22%20data-shapes%3D%22argument%20round%22%20transform%3D%22translate(4%2C4)%22%3E%3Cpath%20class%3D%22blocklyPath%20blocklyBlockBackground%22%20stroke%3D%22%23FF3355%22%20fill%3D%22%23FFFFFF%22%20fill-opacity%3D%221%22%20d%3D%22m%200%2C0%20m%2016%2C0%20H%2067.96666717529297%20a%2016%2016%200%200%201%200%2032%20H%2016%20a%2016%2016%200%200%201%200%20-32%20z%22%2F%3E%3Cg%20class%3D%22blocklyEditableText%22%20style%3D%22cursor%3A%20text%3B%22%20transform%3D%22translate(8%2C%200)%20%22%3E%3Ctext%20class%3D%22blocklyText%22%20x%3D%2233.983333587646484%22%20y%3D%2218%22%20dominant-baseline%3D%22middle%22%20dy%3D%220%22%20text-anchor%3D%22middle%22%3ELocalVar%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3Cpath%20class%3D%22blocklyPath%22%20style%3D%22visibility%3A%20hidden%22%20d%3D%22%22%20fill%3D%22%23FF3355%22%2F%3E%3C%2Fg%3E\n    </svg>",
+      "msg": "%1",
+      "args": [
+        {
+          "argType": "STRING",
+          "placeholder": "LocalVar",
+          "shadowType": "text",
+          "fieldType": "TEXT",
+          "json": {
+            "type": "input_value",
+            "name": "LocalVar"
+          }
+        }
+      ],
+      "mutationText": "<xml><mutation xmlns=\"http://www.w3.org/1999/xhtml\" generateshadows=\"true\" proccode=\"%s\" argumentids=\"[&quot;ZJw;S0SAcbo$q[ben`Yw&quot;]\" argumentnames=\"[&quot;LocalVar&quot;]\" argumentdefaults=\"[&quot;&quot;,&quot;&quot;]\" warp=\"false\"></mutation></xml>",
+      "type": "output",
+      "script": "LocalVar (args, util){\n  const LocalVar = args.LocalVar;\n['r', '%s', 'readLocalStorage', 'highscore']\n  return this.write(`M0 \\n`);\n}\n"
+    },
+    {
+      "opcode": "Set LocalVar",
+      "svg": "<svg id=\"src\" xmlns=\"http://www.w3.org/2000/svg\" width=\"329.6015625\" height=\"56\" >\n    %3Cg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20data-id%3D%22uQYY%3Fzd3%232B%24b_1Sx4Ay%22%20class%3D%22blocklyDraggable%20blocklySelected%22%20data-shapes%3D%22stack%22%3E%3Cpath%20class%3D%22blocklyPath%20blocklyBlockBackground%22%20stroke%3D%22%23FF3355%22%20fill%3D%22%23FF6680%22%20fill-opacity%3D%221%22%20d%3D%22m%200%2C4%20A%204%2C4%200%200%2C1%204%2C0%20H%2012%20c%202%2C0%203%2C1%204%2C2%20l%204%2C4%20c%201%2C1%202%2C2%204%2C2%20h%2012%20c%202%2C0%203%2C-1%204%2C-2%20l%204%2C-4%20c%201%2C-1%202%2C-2%204%2C-2%20H%20325.6000003814697%20a%204%2C4%200%200%2C1%204%2C4%20v%2040%20%20a%204%2C4%200%200%2C1%20-4%2C4%20H%2048%20%20%20c%20-2%2C0%20-3%2C1%20-4%2C2%20l%20-4%2C4%20c%20-1%2C1%20-2%2C2%20-4%2C2%20h%20-12%20c%20-2%2C0%20-3%2C-1%20-4%2C-2%20l%20-4%2C-4%20c%20-1%2C-1%20-2%2C-2%20-4%2C-2%20H%204%20a%204%2C4%200%200%2C1%20-4%2C-4%20z%22%2F%3E%3Cg%20data-id%3D%22ig9H013W.KFME2%7CV%2F%25w%2F%22%20data-argument-type%3D%22text%22%20data-shapes%3D%22argument%20round%22%20transform%3D%22translate(102.01666641235352%2C8)%22%3E%3Cpath%20class%3D%22blocklyPath%20blocklyBlockBackground%22%20stroke%3D%22%23FF3355%22%20fill%3D%22%23FFFFFF%22%20fill-opacity%3D%221%22%20d%3D%22m%200%2C0%20m%2016%2C0%20H%2067.96666717529297%20a%2016%2016%200%200%201%200%2032%20H%2016%20a%2016%2016%200%200%201%200%20-32%20z%22%2F%3E%3Cg%20class%3D%22blocklyEditableText%22%20style%3D%22cursor%3A%20text%3B%22%20transform%3D%22translate(8%2C%200)%20%22%3E%3Ctext%20class%3D%22blocklyText%22%20x%3D%2233.983333587646484%22%20y%3D%2218%22%20dominant-baseline%3D%22middle%22%20dy%3D%220%22%20text-anchor%3D%22middle%22%3ELocalVar%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3Cg%20data-id%3D%22gF%7Dp6hYT%5ENV9flXVq_3m%22%20data-argument-type%3D%22text%22%20data-shapes%3D%22argument%20round%22%20transform%3D%22translate(237.3333339691162%2C8)%22%3E%3Cpath%20class%3D%22blocklyPath%20blocklyBlockBackground%22%20stroke%3D%22%23FF3355%22%20fill%3D%22%23FFFFFF%22%20fill-opacity%3D%221%22%20d%3D%22m%200%2C0%20m%2016%2C0%20H%2068.26666641235352%20a%2016%2016%200%200%201%200%2032%20H%2016%20a%2016%2016%200%200%201%200%20-32%20z%22%2F%3E%3Cg%20class%3D%22blocklyEditableText%22%20style%3D%22cursor%3A%20text%3B%22%20transform%3D%22translate(8%2C%200)%20%22%3E%3Ctext%20class%3D%22blocklyText%22%20x%3D%2234.13333320617676%22%20y%3D%2218%22%20dominant-baseline%3D%22middle%22%20dy%3D%220%22%20text-anchor%3D%22middle%22%3EAnything%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3Cg%20data-argument-type%3D%22text%22%20class%3D%22blocklyEditableText%22%20style%3D%22cursor%3A%20text%3B%22%20transform%3D%22translate(48%2C%208)%20%22%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%2246.016666412353516%22%20height%3D%2232%22%20fill%3D%22%23FF3355%22%2F%3E%3Ctext%20class%3D%22blocklyText%20blocklyEditableLabel%22%20x%3D%2223.008333206176758%22%20y%3D%2218%22%20dominant-baseline%3D%22middle%22%20dy%3D%220%22%20text-anchor%3D%22middle%22%3ESet%3C%2Ftext%3E%3C%2Fg%3E%3Cpath%20class%3D%22blocklyPath%22%20style%3D%22visibility%3A%20hidden%22%20d%3D%22%22%20fill%3D%22%23FF3355%22%2F%3E%3Cg%20data-argument-type%3D%22text%22%20class%3D%22blocklyEditableText%22%20style%3D%22cursor%3A%20text%3B%22%20transform%3D%22translate(193.98333358764648%2C%208)%20%22%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%2235.35000038146973%22%20height%3D%2232%22%20fill%3D%22%23FF3355%22%2F%3E%3Ctext%20class%3D%22blocklyText%20blocklyEditableLabel%22%20x%3D%2217.675000190734863%22%20y%3D%2218%22%20dominant-baseline%3D%22middle%22%20dy%3D%220%22%20text-anchor%3D%22middle%22%3Eto%3C%2Ftext%3E%3C%2Fg%3E%3Cpath%20class%3D%22blocklyPath%22%20style%3D%22visibility%3A%20hidden%22%20d%3D%22%22%20fill%3D%22%23FF3355%22%2F%3E%3C%2Fg%3E\n    </svg>",
+      "msg": "Set %1 to %2",
+      "args": [
+        {
+          "argType": "STRING",
+          "placeholder": "LocalVar",
+          "shadowType": "text",
+          "fieldType": "TEXT",
+          "json": {
+            "type": "input_value",
+            "name": "LocalVar"
+          }
+        },
+        {
+          "argType": "STRING",
+          "placeholder": "Anything",
+          "shadowType": "text",
+          "fieldType": "TEXT",
+          "json": {
+            "type": "input_value",
+            "name": "Anything"
+          }
+        }
+      ],
+      "mutationText": "<xml><mutation xmlns=\"http://www.w3.org/1999/xhtml\" generateshadows=\"true\" proccode=\"Set %s to %s\" argumentids=\"[&quot;r.l,*AM7W{~v:gn+LBKZ&quot;,&quot;#aGO}54fZn2q8=wK2R[;&quot;]\" argumentnames=\"[&quot;LocalVar&quot;,&quot;Anything&quot;]\" argumentdefaults=\"[&quot;&quot;,&quot;&quot;]\" warp=\"false\"></mutation></xml>",
+      "type": "func",
+      "script": "Set LocalVar (args, util){\n  const LocalVar = args.LocalVar;\n  const Anything = args.Anything;\n[' ', 'set %s to %s', 'setLocalStorage', 'highscore', '12']\n  return this.write(`M0 \\n`);\n}\n"
+    }
+  ],
+  "menus": [],
+  "addBlockType": "func",
+  "showMutation": false,
+  "blockScript": null,
+  "genOption": [],
+  "genHeadScript": null,
+  "blockGenerator": null,
+  "isShowCodePreview": false
+}
